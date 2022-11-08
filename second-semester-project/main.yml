@@ -1,0 +1,267 @@
+---
+- name: Setup the LAMP Stack
+#  hosts: demoservers   
+  hosts: projectServer
+  remote_user: root
+  become: true
+ 
+  tasks:
+    - name: Add the user 'Laravel-Ansible User' with a specific uid and a primary group of 'sudo'
+      user:
+        name: laravel-ansible
+        comment: LaravelAnsible
+        group: sudo
+        createhome: yes        
+        home: /home/laravel-ansible
+    - name: install ufw
+      shell: apt install ufw
+      
+    - name: Install apache2
+      apt:
+        name: apache2
+        update_cache: yes
+        state: latest
+    - name: Allow OpenSSH and WWW Full
+      ufw:
+        rule: allow
+        name: "{{ item }}"
+      loop:
+        - OpenSSH
+        - "WWW Full"
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        
+#    - name: Enable UFW
+#      shell: ufw enable
+#      responses:
+#        Question:
+#          - y
+    - name: Start Apache2
+      service:
+        name: apache2
+        enabled: yes
+        state: started
+    - name: Install git, curl, apt-transport-https, ca-certificates, curl , gnupg and gnupg2
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      loop:
+        - git
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - gnupg2
+    - name: Create exam project directory
+      file:
+        path: /var/www/jonah-hng
+        state: directory
+        group: www-data
+        owner: www-data
+        recurse: yes
+    - name: Change Ownership to www-data
+      shell: chown -R www-data:www-data /var/www/jonah-hng
+    - name: Clone a github repository
+      git:
+        repo: https://github.com/f1amy/laravel-realworld-example-app.git
+        dest: /var/www/jonah-hng
+        clone: yes
+        update: yes
+        force: yes
+    - name: Change permissions
+      file: 
+        path: "{{ item }}"
+        mode: '0775'
+        recurse: yes
+      loop:
+        - /var/www/jonah-hng
+        - /var/www/jonah-hng/storage
+        - /var/www/jonah-hng/bootstrap/cache
+  
+    - name: Add PHP8.1 repo
+      command: 
+        cmd: curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+        warn: false
+      
+    - name: Add PHP8.1 repo
+      command: sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+     
+    - name: Update package index
+      apt:
+        update_cache: yes
+       
+    - name: Install PHP8.1 and its dependencies
+      apt:
+        name: "{{ item }}"
+        update_cache: yes
+        state: present
+      loop:
+        - php8.1 
+        - libapache2-mod-php 
+        - php8.1-dev 
+        - php8.1-zip 
+        - php8.1-curl 
+        - php8.1-mbstring 
+        - php8.1-pgsql
+        - php8.1-mysql 
+        - php8.1-gd 
+        - php8.1-xml
+        - php8.1-common
+        - php8.1-bcmath
+    - name: Create a configuration file
+      copy:
+        dest: /etc/apache2/sites-available/jonah-hng.conf
+        content: |
+          <VirtualHost *:80>
+
+              ServerAdmin jonah.uka@gmail.com
+
+              ServerName jonah-hng.live
+              
+              ServerAlias www.jonah-hng.live
+
+              DocumentRoot /var/www/jonah-hng/public
+
+              <Directory /var/www/jonah-hng>
+              
+              AllowOverride All
+              
+              </Directory>
+
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+          </VirtualHost>
+    
+        
+
+    - name: enabled mod_rewrite
+      apache2_module: name=rewrite state=present
+      notify: 
+        - restart apache2
+#    - name: a2ensite jonah-hng
+#      command: a2ensite jonah-hng.conf
+#      args:
+#        creates: /etc/apache2/sites-enabled/jonah-hng.conf
+#      notify:
+#        - restart apache2
+    - name: Configure PHP.ini file
+      lineinfile:
+        path: /etc/php/8.1/apache2/php.ini
+        backup: yes
+        regexp: ";cgi.fix_pathinfo=1"
+        line: "cgi.fix_pathinfo=0"
+        state: present
+      notify:
+        - restart apache2
+    - name: Transfer the script
+      copy: src=./install-postgresql-new.sh dest=/root mode=0777
+    
+    - name: Execute the script
+      command: sh /root/install-postgresql-new.sh
+
+
+    - name: downloading composer
+      command: curl -sS https://getcomposer.org/installer -o composer-setup.php
+      args:
+        chdir: ~
+
+    - name: get hash key of composer
+      shell: curl -sS https://composer.github.io/installer.sig
+      register: HASH
+      args:
+        chdir: ~
+    - name: verify if script is safe to run
+      command: php -r "if (hash_file('SHA384', 'composer-setup.php') === '{{HASH.stdout}}' ) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+      args:
+        chdir: ~  
+
+    - name: install composer
+      command: php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+      args:
+        chdir: ~
+    
+    
+    - name: installing dependencies with composer
+      shell: |
+        "echo $COMPOSER_ALLOW_SUPERUSER"
+        composer install 
+      args:
+        chdir: /var/www/jonah-hng
+      environment:
+        COMPOSER_ALLOW_SUPERUSER: 1
+    - name: Add .htaccess to repo
+      template:
+        src: .htaccess
+        dest: /var/www/jonah-hng/.htaccess
+    - name: setup .env file
+      template:
+        src: .env.j2
+        dest: /var/www/jonah-hng/.env
+  #  - name: Copy .env.example to .env
+  #    copy:
+  #      src: /var/www/jonah-hng/.env.example
+  #      dest: /var/www/jonah-hng/.env
+  #      remote_src: true
+    - name: run php artisan key:generate
+      shell: php artisan key:generate
+      args:
+        chdir: /var/www/jonah-hng
+    - name: Uncomment Web.php to migrate data
+      template:
+        src: web.php
+        dest: /var/www/jonah-hng/routes/web.php
+    - name: Cache Configuration
+      shell: php artisan config:cache
+      args:
+        chdir: /var/www/jonah-hng
+    - name: Disable 000-default.conf
+      shell: a2dissite 000-default.conf
+      args:
+        chdir: ~
+#    - name: Delete 000-default.conf
+#      file:
+#        path: /etc/apache2/sites-available/000-default.conf
+#        state: absent
+    - name: a2ensite jonah-hng
+      command: a2ensite jonah-hng.conf
+      args:
+        creates: /etc/apache2/sites-enabled/jonah-hng.conf
+    - name: CLear Cache
+      shell: php artisan cache:clear && php artisan route:clear && php artisan config:clear && php artisan view:clear
+      args:
+        chdir: /var/www/jonah-hng
+    - name: Run php artisan migrate
+      shell: php artisan migrate --force
+      args:
+        chdir: /var/www/jonah-hng
+      notify:
+        - restart apache2 
+    - name: install snapd
+      apt:
+        name: snapd
+        update_cache: yes
+        state: latest
+    - name: install core and run core refresh
+      shell: snap install core && snap refresh core && snap install --classic certbot
+
+    - name: Make Certbot executable
+      file:
+        src: /snap/bin/certbot
+        dest: /usr/bin/certbot
+        state: link 
+    - name: Install certificates
+      shell: certbot --apache --agree-tos --redirect -m jonah.uka@gmail.com -d jonah-hng.live -d www.jonah-hng.live
+      
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
+
+   
+    
+
+

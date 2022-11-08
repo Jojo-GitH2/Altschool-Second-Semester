@@ -1,0 +1,74 @@
+---
+- name: Setup Apache2 Server and Host php file
+  hosts: all
+  remote_user: root
+  become: yes
+
+  tasks:
+  - name: Update Package index
+    apt:
+      update_cache: yes
+
+  - name: Install Apache2 Server
+    apt:
+      name: apache2
+      state: present
+
+  - name: Start Apache2
+    service:
+      name: apache2
+      enabled: yes
+      state: started
+
+  - name: Get version of Apache2
+    command: apache2 -v
+    register: version_apache2
+
+  - name: Print Apache2 version
+    debug:
+      msg: "The installed version of apache2 is {{version_apache2}}"
+
+  - name: Set timezone to Africa/Lagos
+    command: timedatectl set-timezone Africa/Lagos
+
+  - name: Install PHP and its prerequisites
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+    loop:
+      - apt-transport-https
+      - libapache2-mod-php
+      - lsb-release
+      - software-properties-common
+      - ca-certificates
+      - php7.4-cli
+
+#  - name: install php on the server
+#    command: add-apt-repository ppa:ondrej/php
+
+  - name: Create index.php with content
+    copy:
+      dest: "/var/www/html/index.php"
+      content: |
+        <?php
+        echo date("F d, Y h:i:s A e", time());
+        ?>
+
+  - name: Comment Configuration of /etc/apache2/mods-enabled/dir.conf
+    replace:
+      path: /etc/apache2/mods-enabled/dir.conf
+      regexp: '(\t+)DirectoryIndex'
+      replace: '\t#DirectoryIndex'
+      backup: yes
+  - name: Add new congiguration to /etc/apache2/mods-enabled/dir.conf
+    lineinfile:
+      path: /etc/apache2/mods-enabled/dir.conf
+      backup: yes
+      regexp: "(\t)#DirectoryIndex"
+      line: "	DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm"
+      state: present
+  - name: restart apache2 service
+    service:
+      name: apache2
+      state: restarted
+      enabled: yes

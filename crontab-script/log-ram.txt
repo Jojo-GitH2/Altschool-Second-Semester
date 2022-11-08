@@ -1,0 +1,8 @@
+Tue Nov  8 01:00:01 WAT 2022
+              total        used        free      shared  buff/cache   available
+Mem:        1000116      418192      145512        1980      436412      430564
+Swap:             0           0           0
+Tue Nov  8 02:00:01 WAT 2022
+              total        used        free      shared  buff/cache   available
+Mem:        1000116      418204      130888        1980      451024      430584
+Swap:             0           0           0

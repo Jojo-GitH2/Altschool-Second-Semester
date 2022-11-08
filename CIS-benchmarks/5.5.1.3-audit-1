@@ -1,0 +1,2 @@
+#	PASS_WARN_AGE	Number of days warning given before a password expires.
+PASS_WARN_AGE	7

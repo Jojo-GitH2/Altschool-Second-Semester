@@ -1,0 +1,32 @@
+  File: /etc/ssh/ssh_host_rsa_key.pub
+  Size: 571       	Blocks: 8          IO Block: 4096   regular file
+Device: 801h/2049d	Inode: 71255       Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-09-16 22:05:30.036000106 +0100
+Modify: 2022-08-24 21:20:45.967999663 +0100
+Change: 2022-08-24 21:20:45.967999663 +0100
+ Birth: -
+  File: /etc/ssh/ssh_host_dsa_key.pub
+  Size: 607       	Blocks: 8          IO Block: 4096   regular file
+Device: 801h/2049d	Inode: 71257       Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-08-24 21:21:06.777380567 +0100
+Modify: 2022-08-24 21:20:46.115999660 +0100
+Change: 2022-08-24 21:20:46.115999660 +0100
+ Birth: -
+  File: /etc/ssh/ssh_host_ecdsa_key.pub
+  Size: 179       	Blocks: 8          IO Block: 4096   regular file
+Device: 801h/2049d	Inode: 71260       Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-09-16 22:05:30.144000107 +0100
+Modify: 2022-08-24 21:20:46.147999660 +0100
+Change: 2022-08-24 21:20:46.147999660 +0100
+ Birth: -
+  File: /etc/ssh/ssh_host_ed25519_key.pub
+  Size: 99        	Blocks: 8          IO Block: 4096   regular file
+Device: 801h/2049d	Inode: 71262       Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2022-09-16 22:05:30.160000107 +0100
+Modify: 2022-08-24 21:20:46.167999659 +0100
+Change: 2022-08-24 21:20:46.167999659 +0100
+ Birth: -
