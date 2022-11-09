@@ -1,0 +1,53 @@
+commit ed4a2666f1bf4acdfc83df2c75d39b149e7b60f3
+Author: Jojo-GitH2 <jonah.uka@gmail.com>
+Date:   Thu Sep 8 22:46:51 2022 +0100
+
+    added php_-v and apt-sources
+
+commit 3f17f0066e8372709de0941ea8927d46060f8732
+Author: Jojo-GitH2 <jonah.uka@gmail.com>
+Date:   Sat Sep 3 06:00:31 2022 +0100
+
+    Added a README.md file
+
+commit bb412968d3bd990843e6455eb36e0b9df5513d55
+Author: Jojo-GitH2 <jonah.uka@gmail.com>
+Date:   Sat Sep 3 05:47:04 2022 +0100
+
+    added users and groups assignment
+
+commit d2dd42ac50716d1079f56f1694fa578c3e66c71f
+Author: Jonah <jonah.uka@gmail.com>
+Date:   Sat Aug 27 01:23:38 2022 +0100
+
+    adjusted the spaces before the image links
+
+commit a029777c5778d56ed3f3498e0fe773d0aea3a725
+Author: Jonah <jonah.uka@gmail.com>
+Date:   Sat Aug 27 00:57:48 2022 +0100
+
+    renamed the image files
+
+commit 1ce7af2c4a10e0c49c181f368d59b1a630df7a7d
+Author: Jonah <jonah.uka@gmail.com>
+Date:   Sat Aug 27 00:31:59 2022 +0100
+
+    Embedded the images in the README.md file
+
+commit c4e1e98b9d898ef8277d60e03f6a85663da679dd
+Author: Jonah <jonah.uka@gmail.com>
+Date:   Fri Aug 26 23:40:36 2022 +0100
+
+    Created a list of 10 Linux command and added the image files
+
+commit 9b578bfead4948f1879de20e6208c0ee44af8c77
+Author: Jojo-GitH2 <jonah.uka@gmail.com>
+Date:   Fri Aug 26 18:14:42 2022 +0100
+
+    added the ten-linux-commands folder
+
+commit 12d35736258920401c2c62d24a593b3e43ad2ff2
+Author: Jonah <jonah.uka@gmail.com>
+Date:   Fri Aug 26 14:11:22 2022 +0100
+
+    added Vagrantfile and ifconfig Output as image

@@ -1,0 +1,2 @@
+user.email=jonah.uka@gmail.com
+user.name=Jojo-GitH2
